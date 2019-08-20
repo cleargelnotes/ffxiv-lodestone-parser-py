@@ -1,4 +1,5 @@
 import requests
+import json
 from bs4 import BeautifulSoup
 
 from .jobs import JOBS_SHORT, JobDBCacheSingleton, JobInfo
@@ -44,6 +45,8 @@ class Profile(object):
         self.char_name = "NONAME"
         self.char_url = ""
         self.char_title = ""
+        self.server = ""
+        self.datacenter = ""
         self.jobs = {}
         self.data_retrieved = False
         for job in JOBS_SHORT:
@@ -70,6 +73,10 @@ class Profile(object):
         self.char_url = chara_link.attrs.get("href")
         self.char_name = chara_link.find_all("p", {"class": "frame__chara__name"})[0].next
         self.char_title = chara_link.find_all("p", {"class": "frame__chara__title"})[0].next
+        srv_data = chara_link.find_all("p", {"class": "frame__chara__world"})[0].next.next
+        split = srv_data.split("\xa0(")
+        self.server = split[0]
+        self.datacenter = split[1][:-1]
         
     def parse_job_data(self, soup):
         jobs = soup.find_all("div", {"class": "character__job__level"})
@@ -86,8 +93,36 @@ class Profile(object):
         if not self.data_retrieved:
             self.retrieve_data()
             
-        print("Character: {} ({})".format(self.char_name, self.char_title))
+        print("Character: {} ({}) [{} - {}]".format(self.char_name, self.char_title, self.server, self.datacenter))
         print("---------------------------------")
         for job in JOBS_SHORT:
             print(self.jobs.get(job))
+            
+    def to_json(self):
+        return json.dumps(self.to_json_dict())
+            
+    def to_json_dict(self):
+        char_dict = self.get_char_json_data()
+        jobs_dict = self.get_jobs_json_data()
+        return {
+            "char": char_dict,
+            "jobs": jobs_dict
+        }
+        
+    def get_char_json_data(self):
+        return {
+            "name": self.char_name,
+            "title": self.char_title,
+            "server": self.server,
+            "datacenter": self.datacenter,
+            "url": self.char_url
+        }
+        
+    def get_jobs_json_data(self):
+        ret = {}
+        for job in JOBS_SHORT:
+            job_info = self.jobs[job]
+            ret[job] = job_info.to_json_dict()
+        return ret
+        
     

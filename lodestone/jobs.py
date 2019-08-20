@@ -135,6 +135,14 @@ class JobDBCache(object):
         
 JobDBCacheSingleton = JobDBCache()
     
+def job_data_to_dict(job):
+    return {
+        "id": job.id.name,
+        "name": job.name_en,
+        "max_level": job.max_level,
+        "job_discipiline": job.job_discipline.name,
+        "job_combat_category": job.job_combat_category.name
+    }
 
 class JobInfo(object):
     def __init__(self, job, level="", current_exp=0, max_exp=0):
@@ -153,3 +161,12 @@ class JobInfo(object):
         self.level = data.get("level")
         self.current_exp = data.get("current_exp")
         self.max_exp = data.get("max_exp")
+        
+    def to_json_dict(self):
+        ret = job_data_to_dict(self.job)
+        ret.update({
+            "level": self.level,
+            "current_exp": self.current_exp,
+            "max_exp": self.max_exp
+        })
+        return ret

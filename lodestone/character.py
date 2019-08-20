@@ -102,6 +102,9 @@ class Profile(object):
         return json.dumps(self.to_json_dict())
             
     def to_json_dict(self):
+        if not self.data_retrieved:
+            self.retrieve_data()
+            
         char_dict = self.get_char_json_data()
         jobs_dict = self.get_jobs_json_data()
         return {

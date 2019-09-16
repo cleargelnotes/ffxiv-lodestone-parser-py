@@ -1,5 +1,6 @@
 import requests
 import json
+import base64
 from bs4 import BeautifulSoup
 
 from .jobs import JOBS_SHORT, JobDBCacheSingleton, JobInfo
@@ -82,6 +83,8 @@ class Profile(object):
         char_blocks = profile_data_div.find_all("div", {"class": "character-block"})
         block_race_clan_gender = char_blocks[0]
         race_clan_gender = block_race_clan_gender.find_all("p", {"class": "character-block__name"})[0].contents
+        profile_pic = block_race_clan_gender.find_all("img", {"class": "character-block__face"})[0]
+        self.profile_pic = base64.b64encode(requests.get(profile_pic.attrs.get("src")).content)
         
         race = race_clan_gender[0]
         clan_gender = race_clan_gender[2].split("/")
@@ -135,7 +138,8 @@ class Profile(object):
             "url": self.char_url,
             "race": self.char_race,
             "clan": self.char_clan,
-            "gender": self.char_gender
+            "gender": self.char_gender,
+            "profile_picture": self.profile_pic
         }
         
     def get_jobs_json_data(self):

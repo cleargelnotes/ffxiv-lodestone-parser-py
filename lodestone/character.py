@@ -143,8 +143,8 @@ class Profile(object):
             "race": self.char_race,
             "clan": self.char_clan,
             "gender": self.char_gender,
-            "profile_picture": self.profile_pic.encode("utf-8"),
-            "full_body_picture": self.full_body_pic.encode("utf-8")
+            "profile_picture": self.profile_pic.decode("utf-8"),
+            "full_body_picture": self.full_body_pic.decode("utf-8")
         }
         
     def get_jobs_json_data(self):

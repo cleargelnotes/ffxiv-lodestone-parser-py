@@ -78,6 +78,19 @@ class Profile(object):
         self.server = split[0]
         self.datacenter = split[1][:-1]
         
+        profile_data_div = soup.find_all("div", {"class": "character__profile__data"})[0]
+        char_blocks = profile_data_div.find_all("div", {"class": "character-block"})
+        block_race_clan_gender = char_blocks[0]
+        race_clan_gender = block_race_clan_gender.find_all("p", {"class": "character-block__name"})[0].contents
+        
+        race = race_clan_gender[0]
+        clan_gender = race_clan_gender[2].split("/")
+        clan = clan_gender[0].strip()
+        gender = clan_gender[1].strip()
+        self.char_race = race
+        self.char_clan = clan
+        self.char_gender = gender
+        
     def parse_job_data(self, soup):
         jobs = soup.find_all("div", {"class": "character__job__level"})
         for job in jobs:
@@ -94,6 +107,7 @@ class Profile(object):
             self.retrieve_data()
             
         print("Character: {} ({}) [{} - {}]".format(self.char_name, self.char_title, self.server, self.datacenter))
+        print("{} ({}) {}".format(self.char_race, self.char_clan, self.char_gender))
         print("---------------------------------")
         for job in JOBS_SHORT:
             print(self.jobs.get(job))
@@ -118,7 +132,10 @@ class Profile(object):
             "title": self.char_title,
             "server": self.server,
             "datacenter": self.datacenter,
-            "url": self.char_url
+            "url": self.char_url,
+            "race": self.char_race,
+            "clan": self.char_clan,
+            "gender": self.char_gender
         }
         
     def get_jobs_json_data(self):

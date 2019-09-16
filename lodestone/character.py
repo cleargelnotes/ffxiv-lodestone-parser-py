@@ -86,6 +86,10 @@ class Profile(object):
         profile_pic = block_race_clan_gender.find_all("img", {"class": "character-block__face"})[0]
         self.profile_pic = base64.b64encode(requests.get(profile_pic.attrs.get("src")).content)
         
+        full_body_image_div = soup.find_all("div", {"class": "character__detail__image"})[0]
+        full_body_image = full_body_image_div.find_all("img")[0]
+        self.full_body_pic = base64.b64encode(requests.get(profile_pic.attrs.get("src")).content)
+        
         race = race_clan_gender[0]
         clan_gender = race_clan_gender[2].split("/")
         clan = clan_gender[0].strip()

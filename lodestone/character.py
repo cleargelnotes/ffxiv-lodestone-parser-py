@@ -73,7 +73,10 @@ class Profile(object):
         chara_link = soup.find_all("a", {"class": "frame__chara__link"})[0]
         self.char_url = chara_link.attrs.get("href")
         self.char_name = chara_link.find_all("p", {"class": "frame__chara__name"})[0].next
-        self.char_title = chara_link.find_all("p", {"class": "frame__chara__title"})[0].next
+        try:
+            self.char_title = chara_link.find_all("p", {"class": "frame__chara__title"})[0].next
+        except:
+            self.char_title = ""
         srv_data = chara_link.find_all("p", {"class": "frame__chara__world"})[0].next.next
         split = srv_data.split("\xa0(")
         self.server = split[0]

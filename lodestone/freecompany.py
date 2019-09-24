@@ -17,6 +17,7 @@ class FreeCompany(object):
             
     def retrieve_data(self):
         soups = self.retrieve_pages()
+        self.parse_info(soups.get("info"))
         self.parse_members(soups.get("members"))
         self.data_retrieved = True
         
@@ -42,6 +43,10 @@ class FreeCompany(object):
             ret.append(BeautifulSoup(requests.get("{}?page={}".format(url_members.format(self.fc_id), i+1)).text, "html.parser"))
         
         return ret
+        
+    def parse_info(self, soup):
+        self.name = soup.find("p", {"class": "freecompany__text__name"}).next
+        self.tag = soup.find("p", {"class": "freecompany__text__tag"}).next
         
     def parse_members(self, soups):
         self.members = []

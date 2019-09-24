@@ -67,3 +67,23 @@ class FreeCompany(object):
                                 "rank": rank,
                                 "char_id": char_id
                             })
+                            
+    def get_member_rank(self, char_id):
+        for member in self.members:
+            if member.get("char_id") == char_id:
+                return member.get("rank")
+        return ""
+
+class FreeCompanyCache:
+    def __init__(self):
+        self.fcs = {}
+        
+    def get(self, fc_id):
+        if fc_id in self.fcs:
+            return self.fcs.get(fc_id)
+        fc = FreeCompany(fc_id)
+        fc.retrieve_data()
+        self.fcs[fc_id] = fc
+        return fc
+        
+FC_CACHE = FreeCompanyCache()

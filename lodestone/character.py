@@ -4,6 +4,7 @@ import base64
 from bs4 import BeautifulSoup
 
 from .jobs import JOBS_SHORT, JobDBCacheSingleton, JobInfo
+from .freecompany import FC_CACHE
 
 
 char_id = "9197144"
@@ -82,6 +83,22 @@ class Profile(object):
         self.server = split[0]
         self.datacenter = split[1][:-1]
         
+        try:
+            block_fc = soup.find("div", {"class": "character__freecompany__name"})
+            fc_h4 = block_fc.find("h4")
+            fc_h4_a = fc_h4.find("a")
+            fc_name = fc_h4_a.next
+            fc_id = fc_h4_a.attrs.get("href")[:-1].split("/")[-1]
+            self.fc = {
+                "name": fc_name,
+                "id": fc_id
+            }
+            self.supplement_fc_data()
+        except:
+            import traceback
+            traceback.print_exc()
+            self.fc = {}
+        
         profile_data_div = soup.find_all("div", {"class": "character__profile__data"})[0]
         char_blocks = profile_data_div.find_all("div", {"class": "character-block"})
         block_race_clan_gender = char_blocks[0]
@@ -111,13 +128,22 @@ class Profile(object):
         job_data = job_info.get("job")
         if job_data:
             self.jobs[job_data.name_short].update_info(job_info)
-                
+            
+    def supplement_fc_data(self):
+        fc = FC_CACHE.get(self.fc.get("id"))
+        member_rank = fc.get_member_rank(self.char_id)
+        self.fc.update({
+            "rank": member_rank,
+            "tag": fc.tag
+        })
+        
     def print_report(self):
         if not self.data_retrieved:
             self.retrieve_data()
             
         print("Character: {} ({}) [{} - {}]".format(self.char_name, self.char_title, self.server, self.datacenter))
         print("{} ({}) {}".format(self.char_race, self.char_clan, self.char_gender))
+        print("FC {} {} ({}) - {}".format(self.fc.get("name"), self.fc.get("tag"), self.fc.get("id"), self.fc.get("rank")))
         print("---------------------------------")
         for job in JOBS_SHORT:
             print(self.jobs.get(job))
@@ -131,9 +157,11 @@ class Profile(object):
             
         char_dict = self.get_char_json_data()
         jobs_dict = self.get_jobs_json_data()
+        fc_dict = self.get_fc_json_data()
         return {
             "char": char_dict,
-            "jobs": jobs_dict
+            "jobs": jobs_dict,
+            "fc": fc_dict
         }
         
     def get_char_json_data(self):
@@ -156,5 +184,8 @@ class Profile(object):
             job_info = self.jobs[job]
             ret[job] = job_info.to_json_dict()
         return ret
+        
+    def get_fc_json_data(self):
+        return self.fc
         
     

@@ -196,6 +196,32 @@ class Profile(object):
                     }
                 })
             
+            # check if there is dye
+            dye_div = tooltip_div.find("div", {"class": "stain"})
+            if dye_div:
+                dye_a = dye_div.find("a")
+                dyeid = dye_a.attrs.get("href").split("/")[-2]
+                dyename = dye_a.next
+                item_data.update({
+                    "dye": {
+                        "id": dyeid,
+                        "name": dyename
+                    }
+                })
+                
+            # check if there are materias
+            ul_div = tooltip_div.find("ul", {"class": "db-tooltip__materia"})            
+            if ul_div:
+                materias = []
+                for materia_div in ul_div.find_all("div", {"class": "db-tooltip__materia__txt"}):
+                    materias.append({
+                        "name": materia_div.next
+                    })
+                if materias:
+                    item_data.update({
+                        "materias": materias
+                    })
+            
             self.equipment.append(item_data)
         
         

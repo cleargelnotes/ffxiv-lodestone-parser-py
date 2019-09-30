@@ -1,7 +1,9 @@
 import requests
 import json
 import base64
+import re
 from bs4 import BeautifulSoup
+from enum import Enum, auto
 
 from .jobs import JOBS_SHORT, JobDBCacheSingleton, JobInfo
 from .freecompany import FC_CACHE
@@ -41,6 +43,29 @@ def parse_job(job):
     }
     
 
+class EquipmentSlots(Enum):
+    WEAPON = auto()
+    OFFHAND = auto()
+    HEAD = auto()
+    BODY = auto()
+    HANDS = auto()
+    BELT = auto()
+    LEGS = auto()
+    FEET = auto()
+    EARRINGS = auto()
+    NECKLACE = auto()
+    BRACELETS = auto()
+    RING = auto()
+    CRYSTAL = auto()
+    #@staticmethod
+    #def parse_slot(slot):
+    #    if slot.endswith(" Arm") or slot.endswith(" Primary Tool"):
+    #        return EquipmentSlots.WEAPON
+    #    if slot == "Shield" or slot.endswith(" Secondary Tool"):
+    #        return EquipmentSlots.OFFHAND
+    #    if slot == "
+    
+
 class Profile(object):
     def __init__(self, char_id, retrieve_data=False):
         self.char_id = char_id
@@ -67,6 +92,7 @@ class Profile(object):
         
         self.parse_char_data(soup)
         self.parse_job_data(soup)
+        self.parse_gearset_data(soup)
         
         self.data_retrieved = True
         
@@ -123,6 +149,55 @@ class Profile(object):
         for job in jobs:
             parsed_job = parse_job(job)
             self.set_job_info(parsed_job)
+            
+    def parse_gearset_data(self, soup):
+        profile_page = soup.find("div", {"class": "character__content"})
+        equips = profile_page.find_all("div", {"class": re.compile("icon-c--\d\d?")})
+        self.equipment = []
+        for equip in equips:
+            tooltip_div = equip.find("div", {"class": "db-tooltip"})
+            if not tooltip_div:
+                continue
+            
+            iid_div = tooltip_div.find("div", {"class": "db-tooltip__bt_item_detail"})
+            iid_a = iid_div.find("a")
+            iid = iid_a.attrs.get("href")[:-1].rsplit("/",1)[1]
+            
+            iname_h2 = tooltip_div.find("h2", {"class": "db-tooltip__item__name"})
+            iname = iname_h2.next
+            
+            ilvl_div = tooltip_div.find("div", {"class": "db-tooltip__item__level"})
+            try:
+                ilvl = int(ilvl_div.next.rsplit(" ", 1)[1])
+            except:
+                ilvl = 0
+                
+            islot_p = tooltip_div.find("p", {"class": "db-tooltip__item__category"})
+            islot_raw = islot_p.next
+            
+            item_data = {
+                "id": iid,
+                "name": iname,
+                "ilvl": ilvl,
+                "category": islot_raw
+            }
+            
+            # check if there is glamour
+            glamour_div = tooltip_div.find("div", {"class": "db-tooltip__item__mirage"})
+            if glamour_div:
+                igname_p = glamour_div.find("p")
+                igname = igname_p.next
+                igid_a = igname.next
+                igid = igid_a.attrs.get("href")[:-1].rsplit("/",1)[1]
+                item_data.update({
+                    "glamour": {
+                        "id": igid,
+                        "name": igname
+                    }
+                })
+            
+            self.equipment.append(item_data)
+        
         
     def set_job_info(self, job_info):
         job_data = job_info.get("job")
@@ -158,10 +233,12 @@ class Profile(object):
         char_dict = self.get_char_json_data()
         jobs_dict = self.get_jobs_json_data()
         fc_dict = self.get_fc_json_data()
+        equipment_dict = self.get_equipment_json_data()
         return {
             "char": char_dict,
             "jobs": jobs_dict,
-            "fc": fc_dict
+            "fc": fc_dict,
+            "equipment": equipment_dict
         }
         
     def get_char_json_data(self):
@@ -187,5 +264,8 @@ class Profile(object):
         
     def get_fc_json_data(self):
         return self.fc
+        
+    def get_equipment_json_data(self):
+        return self.equipment
         
     

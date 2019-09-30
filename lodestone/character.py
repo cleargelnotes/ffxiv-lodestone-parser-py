@@ -161,7 +161,7 @@ class Profile(object):
             
             iid_div = tooltip_div.find("div", {"class": "db-tooltip__bt_item_detail"})
             iid_a = iid_div.find("a")
-            iid = iid_a.attrs.get("href")[:-1].rsplit("/",1)[1]
+            iid = iid_a.attrs.get("href").split("/")[-2]
             
             iname_h2 = tooltip_div.find("h2", {"class": "db-tooltip__item__name"})
             iname = iname_h2.next
@@ -188,7 +188,7 @@ class Profile(object):
                 igname_p = glamour_div.find("p")
                 igname = igname_p.next
                 igid_a = igname.next
-                igid = igid_a.attrs.get("href")[:-1].rsplit("/",1)[1]
+                igid = igid_a.attrs.get("href").split("/")[-2]
                 item_data.update({
                     "glamour": {
                         "id": igid,

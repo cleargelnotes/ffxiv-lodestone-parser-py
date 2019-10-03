@@ -93,6 +93,7 @@ class Profile(object):
         self.parse_char_data(soup)
         self.parse_job_data(soup)
         self.parse_gearset_data(soup)
+        self.parse_attribute_data(soup)
         
         self.data_retrieved = True
         
@@ -223,6 +224,26 @@ class Profile(object):
                     })
             
             self.equipment.append(item_data)
+            
+            
+    def parse_attribute_data(self, soup):
+        attribute_page = soup.find_all("div", {"class": "character__content"})[1]
+        self.attributes = {}
+        profile_data_div = attribute_page.find("div", {"class": "character__profile__data"})
+        h3_list = profile_data_div.find_all("h3", {"class": "heading--lead"})
+        for h3 in h3_list:
+            attr_table = h3.nextSibling
+            tr_list = attr_table.find_all("tr")
+            for tr in tr_list:
+                th = tr.find("th")
+                td = tr.find("td")
+                span = th.find("span")
+                attr_name = span.next
+                attr = {
+                    "tooltip": span.attrs.get("data-tooltip"),
+                    "value": parse_formatted_int(td.next)
+                }
+                self.attributes[attr_name] = attr
         
         
     def set_job_info(self, job_info):

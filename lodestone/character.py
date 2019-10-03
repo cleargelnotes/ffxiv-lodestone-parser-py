@@ -246,9 +246,15 @@ class Profile(object):
                 self.attributes[attr_name] = attr
                 
         hp_p = attribute_page.find("p", {"class": "character__param__text__hp--en-us"})
-        hp_val = parse_formatted_int(hp_p.nextSibling.next)
+        try:
+            hp_val = parse_formatted_int(hp_p.nextSibling.next)
+        except:
+            hp_val = 0
         mp_p = attribute_page.find("p", {"class": "character__param__text__mp--en-us"})
-        mp_val = parse_formatted_int(mp_p.nextSibling.next)
+        try:
+            mp_val = parse_formatted_int(mp_p.nextSibling.next)
+        except:
+            mp_val = 0
         self.attributes.update({
             "HP": {"value": hp_val},
             "MP": {"value": mp_val}

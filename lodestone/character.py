@@ -244,6 +244,15 @@ class Profile(object):
                     "value": parse_formatted_int(td.next)
                 }
                 self.attributes[attr_name] = attr
+                
+        hp_p = attribute_page.find("p", {"class": "character__param__text__hp--en-us"})
+        hp_val = parse_formatted_int(hp_p.nextSibling.next)
+        mp_p = attribute_page.find("p", {"class": "character__param__text__mp--en-us"})
+        mp_val = parse_formatted_int(mp_p.nextSibling.next)
+        self.attributes.update({
+            "HP": hp_val,
+            "MP": mp_val
+        })
         
         
     def set_job_info(self, job_info):

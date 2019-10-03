@@ -255,9 +255,21 @@ class Profile(object):
             mp_val = parse_formatted_int(mp_p.nextSibling.next)
         except:
             mp_val = 0
+        cp_p = attribute_page.find("p", {"class": "character__param__text__cp--en-us"})
+        try:
+            cp_val = parse_formatted_int(cp_p.nextSibling.next)
+        except:
+            cp_val = 0
+        gp_p = attribute_page.find("p", {"class": "character__param__text__gp--en-us"})
+        try:
+            gp_val = parse_formatted_int(gp_p.nextSibling.next)
+        except:
+            gp_val = 0
         self.attributes.update({
             "HP": {"value": hp_val},
-            "MP": {"value": mp_val}
+            "MP": {"value": mp_val},
+            "CP": {"value": cp_val},
+            "GP": {"value": gp_val},
         })
         
         

@@ -250,8 +250,8 @@ class Profile(object):
         mp_p = attribute_page.find("p", {"class": "character__param__text__mp--en-us"})
         mp_val = parse_formatted_int(mp_p.nextSibling.next)
         self.attributes.update({
-            "HP": hp_val,
-            "MP": mp_val
+            "HP": {"value": hp_val},
+            "MP": {"value": mp_val}
         })
         
         
@@ -290,11 +290,13 @@ class Profile(object):
         jobs_dict = self.get_jobs_json_data()
         fc_dict = self.get_fc_json_data()
         equipment_dict = self.get_equipment_json_data()
+        attribute_dict = self.get_attribute_json_data()
         return {
             "char": char_dict,
             "jobs": jobs_dict,
             "fc": fc_dict,
-            "equipment": equipment_dict
+            "equipment": equipment_dict,
+            "attributes": attribute_dict
         }
         
     def get_char_json_data(self):
@@ -323,5 +325,11 @@ class Profile(object):
         
     def get_equipment_json_data(self):
         return self.equipment
+        
+    def get_attribute_json_data(self):
+        ret = {}
+        for k in self.attributes.keys():
+            ret[k] = self.attributes[k].get("value")
+        return ret
         
     

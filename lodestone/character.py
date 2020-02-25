@@ -12,6 +12,7 @@ from .freecompany import FC_CACHE
 char_id = "9197144"
 
 url = "https://na.finalfantasyxiv.com/lodestone/character/{}"
+job_url = "https://na.finalfantasyxiv.com/lodestone/character/{}/class_job"
 
 
 def parse_formatted_int(num):
@@ -31,8 +32,10 @@ def parse_exp(exp):
 
 def parse_job(job):
     job_level = parse_formatted_int(job.next)
-    job_name = job.next_sibling.next
-    job_exp = job.next_sibling.next_sibling.next
+    job_name_div = job.find_next("div")
+    job_name = job_name_div.next
+    job_exp_div = job_name_div.find_next("div")
+    job_exp = job_exp_div.next
     current_exp, max_exp = parse_exp(job_exp)
     
     return {
@@ -87,11 +90,17 @@ class Profile(object):
         soup = BeautifulSoup(resp_data.text, "html.parser")
         return soup
         
+    def retrieve_job_page(self):
+        resp_data = requests.get(job_url.format(self.char_id))
+        soup = BeautifulSoup(resp_data.text, "html.parser")
+        return soup
+        
     def retrieve_data(self):
         soup = self.retrieve_page()
+        job_soup = self.retrieve_job_page()
         
         self.parse_char_data(soup)
-        self.parse_job_data(soup)
+        self.parse_job_data(job_soup)
         self.parse_gearset_data(soup)
         self.parse_attribute_data(soup)
         

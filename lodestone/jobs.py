@@ -92,7 +92,7 @@ class JobDB(object):
     BLM = JobData(id=Jobs.BLM, name_short="BLM", name_en="Black Mage", class_en="Thaumaturge", max_level=80, job_discipline=JobDiscipline.DOM, job_combat_category=JobCombatCategory.DPS_MAGIC)
     SMN = JobData(id=Jobs.SMN, name_short="SMN", name_en="Summoner", class_en="Arcanist", max_level=80, job_discipline=JobDiscipline.DOM, job_combat_category=JobCombatCategory.DPS_MAGIC)
     RDM = JobData(id=Jobs.RDM, name_short="RDM", name_en="Red Mage", class_en="Red Mage", max_level=80, job_discipline=JobDiscipline.DOM, job_combat_category=JobCombatCategory.DPS_MAGIC)
-    BLU = JobData(id=Jobs.BLU, name_short="BLU", name_en="Blue Mage", class_en="Blue Mage", max_level=50, job_discipline=JobDiscipline.DOM, job_combat_category=JobCombatCategory.DPS_MAGIC)
+    BLU = JobData(id=Jobs.BLU, name_short="BLU", name_en="Blue Mage", class_en="Blue Mage", max_level=60, job_discipline=JobDiscipline.DOM, job_combat_category=JobCombatCategory.DPS_MAGIC)
     
     CRP = JobData(id=Jobs.CRP, name_short="CRP", name_en="Carpenter", class_en="Carpenter", max_level=80, job_discipline=JobDiscipline.DOH, job_combat_category=JobCombatCategory.NA)
     BSM = JobData(id=Jobs.BSM, name_short="BSM", name_en="Blacksmith", class_en="Blacksmith", max_level=80, job_discipline=JobDiscipline.DOH, job_combat_category=JobCombatCategory.NA)

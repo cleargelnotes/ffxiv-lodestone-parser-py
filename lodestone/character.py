@@ -227,7 +227,7 @@ class Profile(object):
             
             
     def parse_attribute_data(self, soup):
-        attribute_page = soup.find_all("div", {"class": "character__content"})[1]
+        attribute_page = soup.find_all("div", {"class": "character__content"})[0]
         self.attributes = {}
         profile_data_div = attribute_page.find("div", {"class": "character__profile__data"})
         h3_list = profile_data_div.find_all("h3", {"class": "heading--lead"})

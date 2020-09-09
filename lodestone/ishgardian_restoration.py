@@ -1,0 +1,21 @@
+import requests
+import json
+import base64
+import re
+from bs4 import BeautifulSoup
+
+url = "https://na.finalfantasyxiv.com/lodestone/ishgardian_restoration/builders_progress_report"
+
+def parse():
+    resp_data = requests.get(url)
+    soup = BeautifulSoup(resp_data.text, "html.parser")
+    world_lists = soup.find_all("ul", {"class": "report-world_list"})
+    ret = {}
+    for world_list in world_lists:
+        lis = world_list.find_all("li")
+        for li in lis:
+            world_name = str(li.find("span", {"class": "world_name"}).next)
+            progress = li.find("div", {"class": "bar"}).find("span").attrs.get("style").split(" ")[1]
+            print(world_name + ": " +progress)
+            ret[world_name] = progress
+    return ret

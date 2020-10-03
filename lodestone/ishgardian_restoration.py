@@ -15,8 +15,12 @@ def parse():
         lis = world_list.find_all("li")
         for li in lis:
             world_name = str(li.find("span", {"class": "world_name"}).next)
-            progress = li.find("div", {"class": "bar"}).find("span").attrs.get("style").split(" ")[1]
-            progress_float = float(progress[:-1])
+            try:
+                progress = li.find("div", {"class": "bar"}).find("span").attrs.get("style").split(" ")[1]
+                progress_float = float(progress[:-1])
+            except:
+                progress = "100%"
+                progress_float = 100.0
             level = str(li.find("div", {"class": "status"}).find("p").next)
             #print(world_name + ": [" + level + "] " +progress)
             ret[world_name] = {

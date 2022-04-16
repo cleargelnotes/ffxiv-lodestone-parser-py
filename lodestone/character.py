@@ -115,7 +115,7 @@ class Profile(object):
         except:
             self.char_title = ""
         srv_data = chara_link.find_all("p", {"class": "frame__chara__world"})[0].next.next
-        split = srv_data.split("\xa0(")
+        split = srv_data.split(" [")
         self.server = split[0]
         self.datacenter = split[1][:-1]
         
